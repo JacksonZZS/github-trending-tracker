@@ -1,6 +1,9 @@
 // 本地运行脚本 - 为 Trending 项目生成 AI 总结
 // 使用方法: npx tsx src/scripts/generate-summaries.ts
 
+import { config } from "dotenv";
+config({ path: ".env.local" });
+
 import { createClient } from "@supabase/supabase-js";
 import { generateBatchAnalysis, type RepoAnalysis } from "../lib/ai/summarizer";
 
