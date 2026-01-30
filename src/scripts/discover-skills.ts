@@ -44,7 +44,9 @@ async function main() {
   console.log("⭐ 高度推荐（与你的方向高度相关）");
   console.log("═".repeat(60));
   high.forEach((a) => {
-    console.log(`\n[${a.id}] 📦 ${a.name}`);
+    const skill = skills.find((s) => s.id === a.id);
+    const installed = skill?.installed ? " ✅ 已安装" : "";
+    console.log(`\n[${a.id}] 📦 ${a.name}${installed}`);
     console.log(`    📝 ${a.summary}`);
     console.log(`    🎯 ${a.what_it_does}`);
     console.log(`    💡 ${a.usefulness_reason}`);
@@ -55,7 +57,9 @@ async function main() {
     console.log("📌 值得关注");
     console.log("─".repeat(60));
     medium.forEach((a) => {
-      console.log(`[${a.id}] ${a.name} - ${a.summary}`);
+      const skill = skills.find((s) => s.id === a.id);
+      const installed = skill?.installed ? " ✅" : "";
+      console.log(`[${a.id}] ${a.name}${installed} - ${a.summary}`);
     });
   }
 
@@ -64,7 +68,9 @@ async function main() {
     console.log("📋 其他 Skills");
     console.log("─".repeat(60));
     low.forEach((a) => {
-      console.log(`[${a.id}] ${a.name}`);
+      const skill = skills.find((s) => s.id === a.id);
+      const installed = skill?.installed ? " ✅" : "";
+      console.log(`[${a.id}] ${a.name}${installed}`);
     });
   }
 
