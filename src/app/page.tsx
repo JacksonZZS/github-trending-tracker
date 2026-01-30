@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Github, RefreshCw, AlertCircle } from "lucide-react";
 import { RepoList } from "@/components/trending/repo-list";
 import { LanguageFilter } from "@/components/trending/language-filter";
+import { UsefulnessFilter } from "@/components/trending/usefulness-filter";
 import { Button } from "@/components/ui/button";
 import { useFilterStore } from "@/stores/filter-store";
 import type { TrendingRepo } from "@/lib/types";
@@ -76,6 +77,10 @@ export default function HomePage() {
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-3">语言筛选</h2>
           <LanguageFilter />
+        </div>
+
+        <div className="mb-6">
+          <UsefulnessFilter />
         </div>
 
         <div className="mb-4 flex items-center justify-between">
