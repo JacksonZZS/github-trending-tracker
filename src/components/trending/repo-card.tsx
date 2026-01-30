@@ -1,11 +1,12 @@
 "use client";
 
-import { Star, GitFork, Heart, Copy, ExternalLink, Sparkles, TrendingUp, Bookmark } from "lucide-react";
+import { Star, GitFork, Heart, Copy, ExternalLink, Sparkles, TrendingUp, Bookmark, Info } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn, formatNumber, getCloneCommand, copyToClipboard } from "@/lib/utils";
 import { useFavoriteStore } from "@/stores/favorite-store";
 import { useState } from "react";
+import { RepoDetailModal } from "./repo-detail-modal";
 
 interface RepoCardProps {
   rank: number;
@@ -42,6 +43,7 @@ export function RepoCard({
 }: RepoCardProps) {
   const { isFavorite, toggleFavorite } = useFavoriteStore();
   const [copied, setCopied] = useState(false);
+  const [showDetail, setShowDetail] = useState(false);
   const favorite = isFavorite(repoName);
 
   const handleCopy = async () => {
@@ -174,6 +176,16 @@ export function RepoCard({
             <Button
               variant="outline"
               size="sm"
+              onClick={() => setShowDetail(true)}
+              className="gap-1 text-purple-600 border-purple-200 hover:bg-purple-50"
+            >
+              <Info className="w-4 h-4" />
+              AI 分析
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
               onClick={handleCopy}
               className="gap-1"
             >
@@ -194,6 +206,13 @@ export function RepoCard({
           </div>
         </div>
       </CardContent>
+
+      <RepoDetailModal
+        repoName={repoName}
+        repoUrl={url}
+        isOpen={showDetail}
+        onClose={() => setShowDetail(false)}
+      />
     </Card>
   );
 }
