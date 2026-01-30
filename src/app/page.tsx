@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Github, RefreshCw } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
+import { Github, RefreshCw, AlertCircle } from "lucide-react";
 import { RepoList } from "@/components/trending/repo-list";
 import { LanguageFilter } from "@/components/trending/language-filter";
 import { Button } from "@/components/ui/button";
@@ -11,10 +11,12 @@ import type { TrendingRepo } from "@/lib/types";
 export default function HomePage() {
   const [repos, setRepos] = useState<TrendingRepo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const { selectedLanguage, selectedDate } = useFilterStore();
 
-  const fetchRepos = async () => {
+  const fetchRepos = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (selectedDate) params.set("date", selectedDate);
@@ -22,18 +24,23 @@ export default function HomePage() {
 
       const response = await fetch(`/api/trending?${params}`);
       const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch");
+      }
+
       setRepos(data.repos || []);
-    } catch (error) {
-      console.error("Failed to fetch repos:", error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load repositories");
       setRepos([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedLanguage, selectedDate]);
 
   useEffect(() => {
     fetchRepos();
-  }, [selectedLanguage, selectedDate]);
+  }, [fetchRepos]);
 
   return (
     <div className="min-h-screen">
@@ -82,6 +89,16 @@ export default function HomePage() {
           </h2>
           <p className="text-sm text-muted-foreground">{selectedDate}</p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-center gap-2 text-destructive">
+            <AlertCircle className="w-5 h-5" />
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={fetchRepos} className="ml-auto">
+              重试
+            </Button>
+          </div>
+        )}
 
         <RepoList repos={repos} loading={loading} />
       </main>

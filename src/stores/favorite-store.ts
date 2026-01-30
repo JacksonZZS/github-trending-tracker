@@ -37,6 +37,7 @@ export const useFavoriteStore = create<FavoriteStore>()(
       name: "github-trending-favorites",
       storage: {
         getItem: (name) => {
+          if (typeof window === "undefined") return null;
           const str = localStorage.getItem(name);
           if (!str) return null;
           const parsed = JSON.parse(str);
@@ -49,6 +50,7 @@ export const useFavoriteStore = create<FavoriteStore>()(
           };
         },
         setItem: (name, value) => {
+          if (typeof window === "undefined") return;
           const toStore = {
             ...value,
             state: {
@@ -58,7 +60,10 @@ export const useFavoriteStore = create<FavoriteStore>()(
           };
           localStorage.setItem(name, JSON.stringify(toStore));
         },
-        removeItem: (name) => localStorage.removeItem(name),
+        removeItem: (name) => {
+          if (typeof window === "undefined") return;
+          localStorage.removeItem(name);
+        },
       },
     }
   )

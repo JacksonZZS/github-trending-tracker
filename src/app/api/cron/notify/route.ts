@@ -6,7 +6,14 @@ export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    return NextResponse.json(
+      { error: "Server misconfigured: CRON_SECRET not set" },
+      { status: 500 }
+    );
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -67,7 +74,6 @@ export async function GET(request: Request) {
       total: settings.length,
     });
   } catch (error) {
-    console.error("Notify error:", error);
     return NextResponse.json(
       { error: String(error) },
       { status: 500 }

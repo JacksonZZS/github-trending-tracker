@@ -6,7 +6,14 @@ export async function GET(request: Request) {
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
 
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret) {
+    return NextResponse.json(
+      { error: "Server misconfigured: CRON_SECRET not set" },
+      { status: 500 }
+    );
+  }
+
+  if (authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -36,7 +43,6 @@ export async function GET(request: Request) {
       });
 
     if (error) {
-      console.error("Database error:", error);
       return NextResponse.json(
         { error: "Database insert failed", details: error.message },
         { status: 500 }
@@ -50,7 +56,6 @@ export async function GET(request: Request) {
       repos: repos.slice(0, 5).map((r) => r.repo_name),
     });
   } catch (error) {
-    console.error("Cron fetch error:", error);
     return NextResponse.json(
       { error: "Fetch failed", details: String(error) },
       { status: 500 }
